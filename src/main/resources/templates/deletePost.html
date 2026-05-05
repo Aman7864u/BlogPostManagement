@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Delete Post</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #f7f5f2;
+            --surface: #ffffff;
+            --ink: #1a1814;
+            --ink-muted: #6b6660;
+            --accent: #c0392b;
+            --accent-hover: #a93226;
+            --accent-light: #fdf0ef;
+            --border: #e8e4df;
+            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+            --radius: 10px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            padding: 48px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .page-wrapper {
+            width: 100%;
+            max-width: 520px;
+            animation: fadeUp 0.45s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Back link ── */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ink-muted);
+            margin-bottom: 32px;
+            transition: color 0.15s;
+        }
+        .back-link:hover { color: var(--ink); }
+
+        /* ── Warning icon ── */
+        .icon-wrap {
+            width: 64px;
+            height: 64px;
+            background: var(--accent-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            animation: pulse 2.5s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.15); }
+            50%       { box-shadow: 0 0 0 10px rgba(192,57,43,0.0); }
+        }
+
+        /* ── Card ── */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--accent);
+            padding: 40px 36px 36px;
+            text-align: center;
+        }
+
+        .eyebrow {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-family: 'Lora', serif;
+            font-size: 1.65rem;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 10px;
+            line-height: 1.25;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--ink-muted);
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        /* ── Post preview box ── */
+        .post-preview {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 7px;
+            padding: 16px 18px;
+            text-align: left;
+            margin-bottom: 28px;
+        }
+
+        .post-preview-label {
+            font-size: 10.5px;
+            font-weight: 500;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+            margin-bottom: 8px;
+        }
+
+        .post-preview-title {
+            font-family: 'Lora', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 6px;
+        }
+
+        .post-preview-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12.5px;
+            color: var(--ink-muted);
+        }
+
+        .post-preview-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .meta-dot {
+            width: 3px; height: 3px;
+            background: var(--border);
+            border-radius: 50%;
+        }
+
+        /* ── Warning note ── */
+        .warning-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: #fff8e6;
+            border: 1px solid #f0d790;
+            border-radius: 7px;
+            padding: 12px 14px;
+            margin-bottom: 28px;
+            text-align: left;
+        }
+
+        .warning-note svg { flex-shrink: 0; margin-top: 1px; }
+
+        .warning-note p {
+            font-size: 12.5px;
+            color: #7a5c00;
+            line-height: 1.5;
+        }
+
+        /* ── Divider ── */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 0 0 24px;
+        }
+
+        /* ── Actions ── */
+        .form-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-delete {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14.5px;
+            font-weight: 500;
+            padding: 13px 24px;
+            border-radius: 7px;
+            width: 100%;
+            transition: background 0.18s, transform 0.15s, box-shadow 0.18s;
+            box-shadow: 0 2px 8px rgba(192,57,43,0.22);
+            text-decoration: none;
+        }
+        .btn-delete:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(192,57,43,0.30);
+        }
+        .btn-delete:active { transform: translateY(0); }
+
+        .btn-cancel {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: transparent;
+            color: var(--ink-muted);
+            border: 1.5px solid var(--border);
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 11px 24px;
+            border-radius: 7px;
+            width: 100%;
+            text-decoration: none;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+        }
+        .btn-cancel:hover {
+            background: var(--bg);
+            color: var(--ink);
+            border-color: #ccc8c2;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+    <!-- Back link -->
+    <a href="/" class="back-link">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back to all posts
+    </a>
+
+    <!-- Confirmation Card -->
+    <div class="card">
+
+        <!-- Warning icon -->
+        <div class="icon-wrap">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 22h16M10.5 22V10m7 12V10M4 7h20M11 7V5.5A1.5 1.5 0 0112.5 4h3A1.5 1.5 0 0117 5.5V7" stroke="#c0392b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+
+        <p class="eyebrow">Danger Zone</p>
+        <h1>Delete this post?</h1>
+        <p class="subtitle">This action is permanent and cannot be undone.<br>The post will be removed from the database.</p>
+
+        <!-- Post preview -->
+        <div class="post-preview">
+            <p class="post-preview-label">Post to be deleted</p>
+            <p class="post-preview-title" th:text="${post.title}">Post Title</p>
+            <div class="post-preview-meta">
+                <span>
+                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M1.5 10c0-2 2-3.5 4.5-3.5S10.5 8 10.5 10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                    <span th:text="${post.author}">Author</span>
+                </span>
+                <div class="meta-dot"></div>
+                <span>ID: <span th:text="${post.id}">0</span></span>
+            </div>
+        </div>
+
+        <!-- Warning note -->
+        <div class="warning-note">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.5 1.5L13.5 12H1.5L7.5 1.5Z" stroke="#8a6800" stroke-width="1.3" stroke-linejoin="round"/>
+                <path d="M7.5 6v3M7.5 10.5v.5" stroke="#8a6800" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            <p>Once deleted, all content associated with this post will be <strong>permanently removed</strong> and cannot be recovered.</p>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Action buttons -->
+        <div class="form-actions">
+            <!-- Confirm delete — posts to /delete/{id} -->
+            <a th:href="@{'/delete/confirm/' + ${post.id}}" class="btn-delete">
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.5 4h10M6 4V2.5h3V4M5.5 11.5V6M9.5 11.5V6M3.5 4l.5 8.5h7L11.5 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Yes, Delete This Post
+            </a>
+
+            <!-- Cancel — go back -->
+            <a href="/" class="btn-cancel">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Cancel, Keep This Post
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

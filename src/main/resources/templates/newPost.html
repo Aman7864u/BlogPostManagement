@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>New Blog Post</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #f7f5f2;
+            --surface: #ffffff;
+            --ink: #1a1814;
+            --ink-muted: #6b6660;
+            --accent: #c0392b;
+            --accent-light: #fdf0ef;
+            --border: #e8e4df;
+            --border-focus: #c0392b;
+            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+            --radius: 10px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            padding: 48px 24px;
+        }
+
+        .page-wrapper {
+            max-width: 680px;
+            margin: 0 auto;
+            animation: fadeUp 0.45s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Header ── */
+        .page-header {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1.5px solid var(--border);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ink-muted);
+            margin-bottom: 18px;
+            transition: color 0.15s;
+        }
+        .back-link:hover { color: var(--ink); }
+
+        .eyebrow {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+
+        h1 {
+            font-family: 'Lora', serif;
+            font-size: 1.9rem;
+            font-weight: 600;
+            line-height: 1.2;
+            color: var(--ink);
+        }
+
+        /* ── Card ── */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            padding: 36px;
+        }
+
+        /* ── Form ── */
+        .form-group {
+            margin-bottom: 24px;
+            animation: fadeUp 0.45s ease both;
+        }
+        .form-group:nth-child(1) { animation-delay: 0.05s; }
+        .form-group:nth-child(2) { animation-delay: 0.10s; }
+        .form-group:nth-child(3) { animation-delay: 0.15s; }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+            margin-bottom: 8px;
+        }
+
+        label .required {
+            color: var(--accent);
+            margin-left: 2px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            color: var(--ink);
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: 7px;
+            padding: 12px 16px;
+            outline: none;
+            transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+            resize: none;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: var(--border-focus);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.10);
+        }
+
+        input[type="text"]::placeholder,
+        textarea::placeholder {
+            color: #b8b2ac;
+        }
+
+        textarea {
+            min-height: 180px;
+            line-height: 1.65;
+        }
+
+        /* ── Hint text ── */
+        .hint {
+            font-size: 12px;
+            color: var(--ink-muted);
+            margin-top: 6px;
+        }
+
+        /* ── Divider ── */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 28px 0;
+        }
+
+        /* ── Actions ── */
+        .form-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-cancel {
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--ink-muted);
+            padding: 10px 18px;
+            border-radius: 6px;
+            transition: background 0.15s, color 0.15s;
+        }
+        .btn-cancel:hover {
+            background: var(--border);
+            color: var(--ink);
+        }
+
+        .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px 22px;
+            border-radius: 6px;
+            transition: background 0.18s, transform 0.15s, box-shadow 0.18s;
+            box-shadow: 0 2px 8px rgba(192,57,43,0.22);
+        }
+        .btn-submit:hover {
+            background: #a93226;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(192,57,43,0.28);
+        }
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+    <!-- Header -->
+    <div class="page-header">
+        <a th:href="@{/}" class="back-link">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Back to all posts
+        </a>
+        <p class="eyebrow">Content Management</p>
+        <h1>Add New Post</h1>
+    </div>
+
+    <!-- Form Card -->
+    <div class="card">
+        <form th:action="@{/save}" method="post" th:object="${post}">
+
+            <!-- Title -->
+            <div class="form-group">
+                <label for="title">Title <span class="required">*</span></label>
+                <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    th:field="*{title}"
+                    placeholder="Enter the blog post title..."
+                    autocomplete="off"
+                />
+            </div>
+
+            <!-- Author -->
+            <div class="form-group">
+                <label for="author">Author <span class="required">*</span></label>
+                <input
+                    type="text"
+                    id="author"
+                    name="author"
+                    th:field="*{author}"
+                    placeholder="Your name or pen name..."
+                    autocomplete="off"
+                />
+            </div>
+
+            <!-- Content -->
+            <div class="form-group">
+                <label for="content">Content <span class="required">*</span></label>
+                <textarea
+                    id="content"
+                    name="content"
+                    th:field="*{content}"
+                    placeholder="Write your blog post content here..."
+                ></textarea>
+                <p class="hint">Markdown is supported if your backend renders it.</p>
+            </div>
+
+            <hr class="divider">
+
+            <!-- Actions -->
+            <div class="form-actions">
+                <a th:href="@{/}" class="btn-cancel">Cancel</a>
+                <button type="submit" class="btn-submit">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 7.5l3.5 3.5L12 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Publish Post
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>
